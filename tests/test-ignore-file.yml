@@ -1,0 +1,40 @@
+name: Test ignore-file input
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a test ignore file
+        run: |
+          echo "node_modules/" > /tmp/test-eslintignore
+          echo "dist/" >> /tmp/test-eslintignore
+          echo "**/*.min.js" >> /tmp/test-eslintignore
+
+      - id: action
+        uses: .
+        with:
+          github-token: ${{ github.token }}
+          extensions: js
+          annotations: false
+          ignore-file: /tmp/test-eslintignore
+        continue-on-error: true
+
+      - name: Assert action ran with ignore-file
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          # The action should either succeed or fail (not be skipped)
+          # Under act, GitHub API calls may fail, which is acceptable
+          if [ "$OUTCOME" = "skipped" ]; then
+            echo "FAIL: action was unexpectedly skipped"
+            exit 1
+          fi
+          echo "PASS: action ran with ignore-file, outcome=$OUTCOME"

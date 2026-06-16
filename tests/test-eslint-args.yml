@@ -1,0 +1,56 @@
+name: Test ESLint with eslint-args input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up JS project for eslint-args test
+        run: |
+          mkdir -p /tmp/eslint-args-test
+          cd /tmp/eslint-args-test
+          cat > package.json <<'EOF'
+          {
+            "name": "eslint-args-test",
+            "version": "1.0.0",
+            "devDependencies": {
+              "eslint": "^8.57.0"
+            }
+          }
+          EOF
+          cat > .eslintrc.json <<'EOF'
+          {
+            "env": {
+              "node": true,
+              "es2021": true
+            },
+            "rules": {
+              "no-unused-vars": "warn"
+            }
+          }
+          EOF
+          cat > index.js <<'EOF'
+          const hello = 'world';
+          console.log(hello);
+          EOF
+          npm install --silent
+
+      - id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          all-files: 'true'
+          extensions: js
+          annotations: 'false'
+          working-directory: /tmp/eslint-args-test
+          eslint-args: '--max-warnings 10'
+
+      - name: Assert action completed with eslint-args
+        run: |
+          echo "ESLint ran successfully with eslint-args --max-warnings 10"
+          echo "PASS"

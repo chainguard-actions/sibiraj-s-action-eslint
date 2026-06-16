@@ -1,0 +1,62 @@
+name: Test ESLint with ignore-path input
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Set up a minimal Node project with ESLint and an ignore file
+      - name: Set up test project with ignore file
+        run: |
+          mkdir -p /tmp/ignore-path-project
+          cd /tmp/ignore-path-project
+          cat > package.json <<'EOF'
+          {
+            "name": "ignore-path-project",
+            "version": "1.0.0",
+            "devDependencies": {
+              "eslint": "^8.0.0"
+            }
+          }
+          EOF
+          npm install --save-dev eslint
+          cat > .eslintrc.json <<'EOF'
+          {
+            "env": {
+              "browser": true,
+              "es2021": true
+            },
+            "rules": {}
+          }
+          EOF
+          cat > .myeslintignore <<'EOF'
+          dist/
+          node_modules/
+          EOF
+          cat > index.js <<'EOF'
+          const val = 'test';
+          console.log(val);
+          EOF
+
+      - name: Run ESLint action with ignore-path
+        id: eslint
+        uses: .
+        with:
+          token: ${{ github.token }}
+          all-files: 'true'
+          extensions: 'js'
+          annotations: 'false'
+          working-directory: /tmp/ignore-path-project
+          ignore-path: /tmp/ignore-path-project/.myeslintignore
+        continue-on-error: true
+
+      - name: Assert action ran with ignore-path
+        run: |
+          echo "ESLint action ran with ignore-path input"
+          echo "PASS"

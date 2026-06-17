@@ -1,0 +1,66 @@
+name: Test ESLint action - basic all-files
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Node.js
+        run: |
+          node --version
+          npm --version
+
+      - name: Create test project
+        run: |
+          mkdir -p /tmp/eslint-test-project
+          cd /tmp/eslint-test-project
+
+          # Create package.json
+          cat > package.json << 'EOF'
+          {
+            "name": "eslint-test",
+            "version": "1.0.0",
+            "devDependencies": {
+              "eslint": "^8.0.0"
+            }
+          }
+          EOF
+
+          # Create a simple valid JS file
+          cat > index.js << 'EOF'
+          const greeting = 'hello world';
+          console.log(greeting);
+          EOF
+
+          # Create eslint config
+          cat > .eslintrc.json << 'EOF'
+          {
+            "env": {
+              "node": true,
+              "es2021": true
+            },
+            "rules": {}
+          }
+          EOF
+
+          # Install dependencies
+          npm install --prefer-offline 2>&1 | tail -5
+
+      - name: Run ESLint action on all files
+        id: eslint
+        uses: .
+        with:
+          all-files: 'true'
+          working-directory: /tmp/eslint-test-project
+          annotations: 'false'
+          extensions: js
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Assert action completed successfully
+        run: |
+          echo "ESLint action completed"
+          echo "PASS: ESLint ran without error on valid JS files"

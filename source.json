@@ -1,6 +1,11 @@
 {
   "owner": "sibiraj-s",
   "repo": "action-eslint",
-  "version": "",
-  "url": "https://github.com/sibiraj-s/action-eslint"
+  "version": "v4.0.0",
+  "commit_sha": "43529db53a6c6c29ebbc93448adc5b780736248f",
+  "url": "https://github.com/sibiraj-s/action-eslint",
+  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "1",
+  "harden_agent_version": "1"
 }

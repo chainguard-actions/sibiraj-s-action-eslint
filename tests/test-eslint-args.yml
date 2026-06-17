@@ -1,0 +1,69 @@
+name: Test ESLint action - custom eslint args
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up test project with custom config
+        run: |
+          mkdir -p /tmp/eslint-args-test
+          cd /tmp/eslint-args-test
+
+          cat > package.json << 'EOF'
+          {
+            "name": "eslint-args-test",
+            "version": "1.0.0",
+            "devDependencies": {
+              "eslint": "^8.0.0"
+            }
+          }
+          EOF
+
+          # Create a valid JS file
+          cat > main.js << 'EOF'
+          const x = 1;
+          const y = 2;
+          const sum = x + y;
+          console.log(sum);
+          EOF
+
+          # Create a file that should be ignored
+          mkdir -p dist
+          cat > dist/bundle.js << 'EOF'
+          var a=1,b=2;console.log(a+b);
+          EOF
+
+          cat > .eslintrc.json << 'EOF'
+          {
+            "env": {
+              "node": true,
+              "es2021": true
+            },
+            "rules": {
+              "no-var": "error"
+            }
+          }
+          EOF
+
+          npm install --prefer-offline 2>&1 | tail -5
+
+      - name: Run ESLint action with ignore-patterns to skip dist
+        id: eslint
+        uses: .
+        with:
+          all-files: 'true'
+          working-directory: /tmp/eslint-args-test
+          annotations: 'false'
+          extensions: js
+          ignore-patterns: 'dist/**'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Assert action completed with ignore-patterns
+        run: |
+          echo "ESLint action completed with ignore-patterns"
+          echo "PASS: ESLint ran with ignore-patterns and skipped dist directory"

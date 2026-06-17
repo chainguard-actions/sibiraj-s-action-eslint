@@ -1,0 +1,39 @@
+name: 'Action ESLint'
+description: 'GitHub Action that runs ESLint on files changed in a Pull Request'
+author: 'sibiraj-s'
+branding:
+  icon: 'check-square'
+  color: 'green'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+  pre: chainguard-phonehome.js
+inputs:
+  token:
+    description: The GitHub token used to create an authenticated client
+    required: false
+    default: ${{ github.token }}
+  eslint-args:
+    description: ESLint CLI flags
+    required: false
+  extensions:
+    description: Extensions to filter
+    required: false
+    default: js
+  annotations:
+    description: Enable or disable annotations
+    required: false
+    default: true
+  working-directory:
+    description: Path to project containing npm/yarn installation
+    required: false
+  ignore-path:
+    description: Path to ignore file.
+    required: false
+  ignore-patterns:
+    description: Patterns to ignore. Similar to eslint ignorePatterns
+    required: false
+  all-files:
+    description: Run eslint on all files.
+    required: false
+    default: false

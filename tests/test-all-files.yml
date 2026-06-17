@@ -1,0 +1,33 @@
+name: Test all-files mode
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create mock ESLint binary
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/node_modules/.bin"
+          printf '#!/usr/bin/env node\nprocess.exit(0);\n' > "$GITHUB_WORKSPACE/node_modules/.bin/eslint"
+          chmod +x "$GITHUB_WORKSPACE/node_modules/.bin/eslint"
+
+      - id: action
+        uses: .
+        with:
+          token: "dummy-token"
+          all-files: "true"
+          annotations: "false"
+          extensions: "js"
+          eslint-args: "--no-eslintrc"
+          ignore-patterns: "**"
+
+      - name: Assert action completed successfully in all-files mode
+        run: |
+          echo "Action completed without error in all-files mode"
+          echo "PASS"

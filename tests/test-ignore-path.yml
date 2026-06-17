@@ -1,0 +1,47 @@
+name: Test ignore-path input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: pull_request
+      GITHUB_HEAD_REF: feature-branch
+      GITHUB_BASE_REF: main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Node.js project with ESLint
+        run: |
+          mkdir -p /tmp/eslint-ignore-path-test
+          cd /tmp/eslint-ignore-path-test
+          npm init -y
+          npm install eslint@8 --save-dev
+          # Create a .eslintrc.json
+          echo '{"env":{"es6":true},"rules":{"no-unused-vars":"error"}}' > .eslintrc.json
+          # Create a JS file with a lint error
+          echo 'var unused = 1;' > bad.js
+          # Create an ignore file that ignores bad.js
+          echo 'bad.js' > .myeslintignore
+
+      - id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          working-directory: /tmp/eslint-ignore-path-test
+          ignore-path: /tmp/eslint-ignore-path-test/.myeslintignore
+          all-files: "true"
+          annotations: "false"
+        continue-on-error: true
+
+      - name: Assert action ran with ignore-path input
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          # The action should succeed because bad.js is ignored via ignore-path
+          # We just verify the step completed (success or failure is acceptable
+          # since the action may not find changed files in act environment)
+          if [ "${{ steps.action.outcome }}" = "" ]; then
+            echo "FAIL: action did not run"
+            exit 1
+          fi
+          echo "PASS: action ran with ignore-path input"

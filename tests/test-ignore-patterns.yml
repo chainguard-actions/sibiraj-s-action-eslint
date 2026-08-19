@@ -1,37 +1,33 @@
-name: Test ignore-patterns input
+name: Test ignore patterns filter all files
 on:
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_EVENT_NAME: push
-      GITHUB_REF: refs/heads/main
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - id: action
+      - name: Run action with ignore-patterns that match everything
+        id: action
         uses: .
         with:
           github-token: ${{ github.token }}
-          extensions: js,ts
-          annotations: false
+          extensions: js,ts,yml,yaml,md,json
+          # Ignore all files with a catch-all pattern
           ignore-patterns: |
-            node_modules/**
-            dist/**
-            **/*.min.js
+            **/*
+          annotations: false
         continue-on-error: true
 
-      - name: Assert action ran with ignore-patterns
+      - name: Assert action completed (success or graceful failure)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
-          echo "action outcome: $OUTCOME"
-          # The action should either succeed or fail (not be skipped)
-          # Under act, GitHub API calls may fail, which is acceptable
-          if [ "$OUTCOME" = "skipped" ]; then
-            echo "FAIL: action was unexpectedly skipped"
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action completed with outcome: $OUTCOME"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
             exit 1
           fi
-          echo "PASS: action ran with ignore-patterns, outcome=$OUTCOME"

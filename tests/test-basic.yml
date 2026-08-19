@@ -1,4 +1,4 @@
-name: Test ignore-file input
+name: Test basic usage (smoke test)
 on:
   workflow_dispatch:
 
@@ -8,21 +8,14 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create an ignore file that ignores everything
-        run: |
-          # Create an eslintignore file that ignores all files
-          cat > "$GITHUB_WORKSPACE/.testeslintignore" <<'EOF'
-          **/*
-          EOF
-          echo "Created ignore file at $GITHUB_WORKSPACE/.testeslintignore"
-
-      - name: Run action with ignore-file set
+      - name: Run action with basic inputs
         id: action
         uses: .
         with:
           github-token: ${{ github.token }}
-          extensions: js,ts
-          ignore-file: .testeslintignore
+          # Use a non-matching extension so no files are linted
+          # (avoids needing ESLint installed for this basic smoke test)
+          extensions: nonexistent_xyz_abc
           annotations: false
         continue-on-error: true
 

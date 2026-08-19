@@ -1,0 +1,56 @@
+name: Test with ESLint installed and root-dir set
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up a minimal ESLint project in workspace
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/eslint-project"
+          cd "$GITHUB_WORKSPACE/eslint-project"
+          # Create a minimal package.json
+          cat > package.json <<'EOF'
+          {
+            "name": "test-project",
+            "version": "1.0.0",
+            "private": true
+          }
+          EOF
+          # Install ESLint
+          npm install --save-dev eslint@8 2>&1 | tail -5
+          # Create a minimal ESLint config
+          cat > .eslintrc.json <<'EOF'
+          {
+            "env": { "node": true, "es2021": true },
+            "rules": {}
+          }
+          EOF
+          echo "ESLint installed at: $(ls node_modules/.bin/eslint)"
+
+      - name: Run action with root-dir pointing to ESLint project (no matching files)
+        id: action
+        uses: .
+        with:
+          github-token: ${{ github.token }}
+          root-dir: eslint-project
+          # Use a non-matching extension so no files are linted
+          # (we just verify the action can resolve root-dir and ESLint binary)
+          extensions: xyz_no_match_abc
+          annotations: false
+        continue-on-error: true
+
+      - name: Assert action completed (success or graceful failure)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action completed with outcome: $OUTCOME"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi

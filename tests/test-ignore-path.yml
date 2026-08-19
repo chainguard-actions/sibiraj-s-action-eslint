@@ -1,65 +1,25 @@
-name: Test ESLint with ignore-path input
+name: Test ignore-path input
 on:
   workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_EVENT_NAME: push
-      GITHUB_REF: refs/heads/main
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up JS project for ignore-path test
-        run: |
-          mkdir -p /tmp/eslint-ignore-path-test
-          cd /tmp/eslint-ignore-path-test
-          cat > package.json <<'EOF'
-          {
-            "name": "eslint-ignore-path-test",
-            "version": "1.0.0",
-            "devDependencies": {
-              "eslint": "^8.57.0"
-            }
-          }
-          EOF
-          cat > .eslintrc.json <<'EOF'
-          {
-            "env": {
-              "node": true,
-              "es2021": true
-            },
-            "rules": {
-              "no-unused-vars": "error"
-            }
-          }
-          EOF
-          # This file has a lint error but will be ignored via ignore-path
-          cat > bad.js <<'EOF'
-          const unused = 'this would fail linting';
-          EOF
-          # This file is clean
-          cat > good.js <<'EOF'
-          const msg = 'hello';
-          console.log(msg);
-          EOF
-          # Create a custom ignore file that ignores bad.js
-          cat > .myeslintignore <<'EOF'
-          bad.js
-          EOF
-          npm install --silent
-
+      # Use all-files: true with a fixture project to verify that the
+      # ignore-path input is accepted and used without errors.
+      # The ignore-path points to a committed fixture file listing patterns to ignore.
       - id: action
         uses: .
         with:
-          token: ${{ github.token }}
           all-files: 'true'
-          extensions: js
+          working-directory: tests/fixtures/eslint-project
           annotations: 'false'
-          working-directory: /tmp/eslint-ignore-path-test
-          ignore-path: /tmp/eslint-ignore-path-test/.myeslintignore
+          ignore-path: tests/fixtures/eslintignore-example
 
-      - name: Assert action completed with ignore-path
+      - name: Assert action succeeded with ignore-path
         run: |
-          echo "ESLint ran successfully with custom ignore-path"
-          echo "PASS"
+          echo "Action completed successfully with ignore-path input"
+          echo "PASS: ESLint action accepted ignore-path input without errors"

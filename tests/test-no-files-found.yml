@@ -1,0 +1,26 @@
+name: Test no files found - skip gracefully
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Use all-files: true with a fixture that has no JS files.
+      # eslint runs on '.' in the fixture directory but finds no matching files
+      # and exits 0. The action completes successfully.
+      # Using all-files: true avoids the GitHub API call (which requires a
+      # valid commit SHA in the remote repo — not guaranteed under act).
+      - id: action
+        uses: .
+        with:
+          all-files: 'true'
+          working-directory: tests/fixtures/no-js-project
+          annotations: 'false'
+
+      - name: Assert action succeeded with no files
+        run: |
+          echo "Action completed successfully - no JS files in fixture"
+          echo "PASS: ESLint action handled empty directory gracefully"

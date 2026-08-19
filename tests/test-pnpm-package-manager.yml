@@ -1,0 +1,29 @@
+name: Test pnpm package manager
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Install pnpm so the action can use 'pnpm dlx eslint'
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # Use all-files: true with a fixture project and pnpm package manager.
+      # The action runs 'pnpm dlx eslint .' in the fixture directory.
+      # Using all-files: true avoids the GitHub API call.
+      - id: action
+        uses: .
+        with:
+          all-files: 'true'
+          working-directory: tests/fixtures/eslint-project
+          annotations: 'false'
+          package-manager: pnpm
+
+      - name: Assert action succeeded with pnpm
+        run: |
+          echo "Action completed successfully using pnpm package manager"
+          echo "PASS: action accepted pnpm as package manager and ran eslint successfully"

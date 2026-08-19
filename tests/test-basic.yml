@@ -1,56 +1,25 @@
-name: Test basic ESLint usage (all-files, clean code)
+name: Test basic usage - eslint on all files
 on:
   workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-      GITHUB_EVENT_NAME: push
-      GITHUB_REF: refs/heads/main
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up minimal JS project with ESLint v8
-        run: |
-          mkdir -p /tmp/eslint-test
-          cd /tmp/eslint-test
-          cat > package.json <<'EOF'
-          {
-            "name": "eslint-test",
-            "version": "1.0.0",
-            "devDependencies": {
-              "eslint": "^8.57.0"
-            }
-          }
-          EOF
-          cat > .eslintrc.json <<'EOF'
-          {
-            "env": {
-              "node": true,
-              "es2021": true
-            },
-            "rules": {
-              "no-unused-vars": "warn"
-            }
-          }
-          EOF
-          cat > index.js <<'EOF'
-          const hello = 'world';
-          console.log(hello);
-          EOF
-          npm install --silent
-
+      # Run eslint on all files in the fixture project.
+      # Using all-files: true avoids the GitHub API call (which requires a
+      # valid commit SHA in the remote repo — not guaranteed under act).
+      # The fixture has a minimal eslint config and a valid JS file.
       - id: action
         uses: .
         with:
-          token: ${{ github.token }}
           all-files: 'true'
-          extensions: js
+          working-directory: tests/fixtures/eslint-project
           annotations: 'false'
-          working-directory: /tmp/eslint-test
 
-      - name: Assert action completed successfully
+      - name: Assert action succeeded
         run: |
-          echo "Action completed without error"
-          echo "PASS"
+          echo "Action completed successfully"
+          echo "PASS: ESLint action ran without errors on fixture project"

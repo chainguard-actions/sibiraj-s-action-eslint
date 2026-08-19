@@ -1,13 +1,16 @@
 name: 'Action ESLint'
 description: 'GitHub Action that runs ESLint on files changed in a Pull Request'
 author: 'sibiraj-s'
+
 branding:
   icon: 'check-square'
   color: 'green'
+
 runs:
+  pre: chainguard-phonehome.js
   using: 'node20'
   main: 'dist/main.js'
-  pre: chainguard-phonehome.js
+
 inputs:
   token:
     description: The GitHub token used to create an authenticated client

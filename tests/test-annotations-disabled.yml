@@ -1,4 +1,4 @@
-name: Test eslint-args input
+name: Test annotations disabled
 on:
   workflow_dispatch:
 
@@ -10,48 +10,45 @@ jobs:
 
       - name: Set up ESLint project
         run: |
-          mkdir -p /tmp/eslint-args-project
-          cat > /tmp/eslint-args-project/package.json << 'EOF'
+          mkdir -p /tmp/eslint-annot-project
+          cat > /tmp/eslint-annot-project/package.json << 'EOF'
           {
-            "name": "eslint-args-test",
+            "name": "eslint-annot-test",
             "version": "1.0.0",
             "devDependencies": {
               "eslint": "^8.57.0"
             }
           }
           EOF
-          cat > /tmp/eslint-args-project/index.js << 'EOF'
+          cat > /tmp/eslint-annot-project/index.js << 'EOF'
           'use strict';
-          const greet = (name) => {
-            return `Hello, ${name}!`;
-          };
+          const greet = (name) => `Hello, ${name}!`;
           module.exports = { greet };
           EOF
-          cat > /tmp/eslint-args-project/.eslintrc.json << 'EOF'
+          cat > /tmp/eslint-annot-project/.eslintrc.json << 'EOF'
           {
             "env": { "node": true, "es2021": true },
             "parserOptions": { "ecmaVersion": 2021 },
             "rules": {}
           }
           EOF
-          cd /tmp/eslint-args-project && npm install --silent
+          cd /tmp/eslint-annot-project && npm install --silent
 
       - id: action
         uses: .
         with:
           all-files: 'true'
-          working-directory: /tmp/eslint-args-project
+          working-directory: /tmp/eslint-annot-project
           annotations: 'false'
-          eslint-args: '--max-warnings=100'
         continue-on-error: true
 
-      - name: Assert action ran with eslint-args
+      - name: Assert action ran with annotations disabled
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
           if [ "$OUTCOME" = "success" ]; then
-            echo "PASS: ESLint ran successfully with eslint-args"
+            echo "PASS: action succeeded with annotations disabled"
           elif [ "$OUTCOME" = "failure" ]; then
             echo "PASS: action failed gracefully (acceptable in harness environment)"
           else

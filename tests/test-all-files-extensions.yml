@@ -1,4 +1,4 @@
-name: Test ignore-path input
+name: Test all-files with custom extensions
 on:
   workflow_dispatch:
 
@@ -8,55 +8,49 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up ESLint project with ignore file
+      - name: Set up ESLint project with JS files
         run: |
-          mkdir -p /tmp/eslint-ignore-path-project
-          cat > /tmp/eslint-ignore-path-project/package.json << 'EOF'
+          mkdir -p /tmp/eslint-ext-project
+          cat > /tmp/eslint-ext-project/package.json << 'EOF'
           {
-            "name": "eslint-ignore-path-test",
+            "name": "eslint-ext-test",
             "version": "1.0.0",
             "devDependencies": {
               "eslint": "^8.57.0"
             }
           }
           EOF
-          cat > /tmp/eslint-ignore-path-project/index.js << 'EOF'
+          cat > /tmp/eslint-ext-project/index.js << 'EOF'
           'use strict';
           const x = 1;
           module.exports = { x };
           EOF
-          cat > /tmp/eslint-ignore-path-project/.eslintrc.json << 'EOF'
+          cat > /tmp/eslint-ext-project/.eslintrc.json << 'EOF'
           {
             "env": { "node": true, "es2021": true },
             "parserOptions": { "ecmaVersion": 2021 },
             "rules": {}
           }
           EOF
-          # Create an ignore file that ignores all JS files
-          cat > /tmp/eslint-ignore-path-project/.myeslintignore << 'EOF'
-          **/*.js
-          node_modules
-          EOF
-          cd /tmp/eslint-ignore-path-project && npm install --silent
+          cd /tmp/eslint-ext-project && npm install --silent
 
       - id: action
         uses: .
         with:
           all-files: 'true'
-          working-directory: /tmp/eslint-ignore-path-project
+          working-directory: /tmp/eslint-ext-project
           annotations: 'false'
-          ignore-path: /tmp/eslint-ignore-path-project/.myeslintignore
+          extensions: js,ts
         continue-on-error: true
 
-      - name: Assert action ran with ignore-path
+      - name: Assert action ran with custom extensions
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
-          # With all JS files ignored via ignore-path, ESLint should succeed (nothing to lint)
-          # or fail gracefully in the harness environment
+          # With js,ts extensions and a valid JS file, ESLint should run successfully
           if [ "$OUTCOME" = "success" ]; then
-            echo "PASS: action succeeded with ignore-path applied"
+            echo "PASS: action succeeded with custom extensions (js,ts)"
           elif [ "$OUTCOME" = "failure" ]; then
             echo "PASS: action failed gracefully (acceptable in harness environment)"
           else

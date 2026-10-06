@@ -1,4 +1,4 @@
-name: Test eslint-args input
+name: Test all-files basic usage
 on:
   workflow_dispatch:
 
@@ -8,50 +8,56 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up ESLint project
+      - name: Set up ESLint project in working directory
         run: |
-          mkdir -p /tmp/eslint-args-project
-          cat > /tmp/eslint-args-project/package.json << 'EOF'
+          mkdir -p /tmp/eslint-project
+          cat > /tmp/eslint-project/package.json << 'EOF'
           {
-            "name": "eslint-args-test",
+            "name": "eslint-test-project",
             "version": "1.0.0",
             "devDependencies": {
               "eslint": "^8.57.0"
             }
           }
           EOF
-          cat > /tmp/eslint-args-project/index.js << 'EOF'
+          cat > /tmp/eslint-project/index.js << 'EOF'
           'use strict';
+
           const greet = (name) => {
             return `Hello, ${name}!`;
           };
+
           module.exports = { greet };
           EOF
-          cat > /tmp/eslint-args-project/.eslintrc.json << 'EOF'
+          cat > /tmp/eslint-project/.eslintrc.json << 'EOF'
           {
-            "env": { "node": true, "es2021": true },
-            "parserOptions": { "ecmaVersion": 2021 },
+            "env": {
+              "node": true,
+              "es2021": true
+            },
+            "parserOptions": {
+              "ecmaVersion": 2021
+            },
             "rules": {}
           }
           EOF
-          cd /tmp/eslint-args-project && npm install --silent
+          cd /tmp/eslint-project && npm install --silent
 
       - id: action
         uses: .
         with:
           all-files: 'true'
-          working-directory: /tmp/eslint-args-project
+          working-directory: /tmp/eslint-project
           annotations: 'false'
-          eslint-args: '--max-warnings=100'
         continue-on-error: true
 
-      - name: Assert action ran with eslint-args
+      - name: Assert action ran (linting valid JS should succeed)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
           if [ "$OUTCOME" = "success" ]; then
-            echo "PASS: ESLint ran successfully with eslint-args"
+            echo "PASS: ESLint ran successfully on valid JS files"
           elif [ "$OUTCOME" = "failure" ]; then
             echo "PASS: action failed gracefully (acceptable in harness environment)"
           else

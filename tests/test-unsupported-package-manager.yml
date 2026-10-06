@@ -1,0 +1,58 @@
+name: Test unsupported package manager
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up minimal ESLint project
+        run: |
+          mkdir -p /tmp/eslint-pm-project
+          cat > /tmp/eslint-pm-project/package.json << 'EOF'
+          {
+            "name": "eslint-pm-test",
+            "version": "1.0.0",
+            "devDependencies": {
+              "eslint": "^8.57.0"
+            }
+          }
+          EOF
+          cat > /tmp/eslint-pm-project/index.js << 'EOF'
+          'use strict';
+          const x = 1;
+          module.exports = { x };
+          EOF
+          cat > /tmp/eslint-pm-project/.eslintrc.json << 'EOF'
+          {
+            "env": { "node": true },
+            "parserOptions": { "ecmaVersion": 2021 },
+            "rules": {}
+          }
+          EOF
+          cd /tmp/eslint-pm-project && npm install --silent
+
+      - id: action
+        uses: .
+        with:
+          all-files: 'true'
+          working-directory: /tmp/eslint-pm-project
+          annotations: 'false'
+          package-manager: yarn
+        continue-on-error: true
+
+      - name: Assert action failed with unsupported package manager
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          # yarn is not a supported package manager (only npm and pnpm are),
+          # so the action should fail with an error about unsupported package manager
+          if [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action correctly failed for unsupported package manager 'yarn'"
+          else
+            echo "FAIL: expected failure for unsupported package manager but got '$OUTCOME'"
+            exit 1
+          fi

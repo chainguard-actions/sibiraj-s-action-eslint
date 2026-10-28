@@ -6,14 +6,14 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v2.2.1 | [`v2.2.1`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v2.2.1) | [`5af82bf`](https://github.com/sibiraj-s/action-eslint/commit/5af82bfa2a6b0cc7cba3208d6274724977caefbd) |
-| v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v3.0.0) | [`58865e4`](https://github.com/sibiraj-s/action-eslint/commit/58865e4bdd90058b20fe485b3354b6d80cb99e9f) |
-| v3.0.1 | [`v3.0.1`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v3.0.1) | [`bcf41bb`](https://github.com/sibiraj-s/action-eslint/commit/bcf41bb9abce43cdbad51ab9b3da2eddaa17eab3) |
-| v4.0.0 | [`v4.0.0`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v4.0.0) | [`43529db`](https://github.com/sibiraj-s/action-eslint/commit/43529db53a6c6c29ebbc93448adc5b780736248f) |
-| v4.0.1 | [`v4.0.1`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v4.0.1) | [`c24ff92`](https://github.com/sibiraj-s/action-eslint/commit/c24ff92cabb3ad38994c99f5583c59125ea040b0) |
-| v4.0.2 | [`v4.0.2`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v4.0.2) | [`072cb9b`](https://github.com/sibiraj-s/action-eslint/commit/072cb9bd2afac5597fe945bd079961846cb5c3a1) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v2.2.1 | [`v2.2.1`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v2.2.1) | [`5af82bf`](https://github.com/sibiraj-s/action-eslint/commit/5af82bfa2a6b0cc7cba3208d6274724977caefbd) | [`HARDENING.md`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/blob/v2.2.1/HARDENING.md) |
+| v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v3.0.0) | [`58865e4`](https://github.com/sibiraj-s/action-eslint/commit/58865e4bdd90058b20fe485b3354b6d80cb99e9f) | [`HARDENING.md`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/blob/v3.0.0/HARDENING.md) |
+| v3.0.1 | [`v3.0.1`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v3.0.1) | [`bcf41bb`](https://github.com/sibiraj-s/action-eslint/commit/bcf41bb9abce43cdbad51ab9b3da2eddaa17eab3) | [`HARDENING.md`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/blob/v3.0.1/HARDENING.md) |
+| v4.0.0 | [`v4.0.0`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v4.0.0) | [`43529db`](https://github.com/sibiraj-s/action-eslint/commit/43529db53a6c6c29ebbc93448adc5b780736248f) | [`HARDENING.md`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/blob/v4.0.0/HARDENING.md) |
+| v4.0.1 | [`v4.0.1`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v4.0.1) | [`c24ff92`](https://github.com/sibiraj-s/action-eslint/commit/c24ff92cabb3ad38994c99f5583c59125ea040b0) | [`HARDENING.md`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/blob/v4.0.1/HARDENING.md) |
+| v4.0.2 | [`v4.0.2`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/tree/v4.0.2) | [`072cb9b`](https://github.com/sibiraj-s/action-eslint/commit/072cb9bd2afac5597fe945bd079961846cb5c3a1) | [`HARDENING.md`](https://github.com/chainguard-actions/sibiraj-s-action-eslint/blob/v4.0.2/HARDENING.md) |
 
 ## Privacy
 

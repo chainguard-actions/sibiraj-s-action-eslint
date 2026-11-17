@@ -4,8 +4,13 @@
   "version": "v4.0.0",
   "commit_sha": "43529db53a6c6c29ebbc93448adc5b780736248f",
   "url": "https://github.com/sibiraj-s/action-eslint",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/sibiraj-s/action-eslint/v4.0.0/sha256-e027eb5c22fb84987893cd64c259b2712c78b78259ff6caf0df769db4b99fffd.tar.gz",
+    "sha256": "e027eb5c22fb84987893cd64c259b2712c78b78259ff6caf0df769db4b99fffd",
+    "size_bytes": 597459
+  }
 }

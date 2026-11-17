@@ -1,8 +1,0 @@
-{
-  "name": "eslint-test-project",
-  "version": "1.0.0",
-  "description": "Test project for action-eslint",
-  "devDependencies": {
-    "eslint": "^8.0.0"
-  }
-}
